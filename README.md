@@ -1,3 +1,6 @@
+[![security status](https://www.meterian.com/badge/gh/ffissore/json-patch-optimizer/security)](https://www.meterian.com/report/gh/ffissore/json-patch-optimizer)
+[![stability status](https://www.meterian.com/badge/gh/ffissore/json-patch-optimizer/stability)](https://www.meterian.com/report/gh/ffissore/json-patch-optimizer)
+
 # JSON Patch Optimizer
 
 A java library and command line program that takes a JSON patch and reduces it to a smaller form.
