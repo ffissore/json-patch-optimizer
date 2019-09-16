@@ -8,7 +8,7 @@ class AddOptimizer implements Optimizer {
     String path = patch.s("path");
 
     if (optimizedPatches.notValued(path)) {
-      optimizedPatches.add(path, patch.subMap("op", "value"));
+      optimizedPatches.add(path, patch.subMap("op", "value", "index"));
       return;
     }
 
@@ -21,12 +21,12 @@ class AddOptimizer implements Optimizer {
     }
 
     if ("remove".equals(previousOp)) {
-      optimizedPatches.add(path, new SMap("op", "replace", "value", patch.o("value")));
+      optimizedPatches.add(path, new SMap("op", "replace", "value", patch.o("value"), "index", patch.i("index")));
       return;
     }
 
     if ("copy".equals(previousOp) || "move".equals(previousOp)) {
-      optimizedPatches.add(path, patch.subMap("op", "value"));
+      optimizedPatches.add(path, patch.subMap("op", "value", "index"));
       return;
     }
 

@@ -10,7 +10,7 @@ class MoveOptimizer implements Optimizer {
     String fromPath = patch.s("from");
 
     if (optimizedPatches.notValued(fromPath)) {
-      optimizedPatches.add(path, patch.subMap("op", "from"));
+      optimizedPatches.add(path, patch.subMap("op", "from", "index"));
       return;
     }
 
@@ -32,9 +32,7 @@ class MoveOptimizer implements Optimizer {
       optimizedPatches.values().stream()
         .map(v -> (SMap) v)
         .filter(p -> "copy".equals(p.s("op")) && fromPath.equals(p.s("from")))
-        .forEach(copyPatch -> {
-          copyPatch.add("from", path);
-        });
+        .forEach(copyPatch -> copyPatch.add("from", path));
 
       return;
     }

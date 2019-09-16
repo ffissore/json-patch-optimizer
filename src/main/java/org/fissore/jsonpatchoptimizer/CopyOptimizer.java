@@ -10,7 +10,7 @@ class CopyOptimizer implements Optimizer {
 
     if (optimizedPatches.notValued(path)) {
       if (optimizedPatches.notValued(patch.s("from"))) {
-        optimizedPatches.add(path, patch.subMap("op", "from"));
+        optimizedPatches.add(path, patch.subMap("op", "from", "index"));
         return;
       }
 
@@ -18,11 +18,11 @@ class CopyOptimizer implements Optimizer {
       String previousOp = previous.s("op");
 
       if ("add".equals(previousOp) || "replace".equals(previousOp)) {
-        optimizedPatches.add(path, new SMap("op", "add", "value", previous.o("value")));
+        optimizedPatches.add(path, new SMap("op", "add", "value", previous.o("value"), "index", patch.i("index")));
         return;
       }
 
-      optimizedPatches.add(path, patch.subMap("op", "from"));
+      optimizedPatches.add(path, patch.subMap("op", "from", "index"));
       return;
     }
 
@@ -35,7 +35,7 @@ class CopyOptimizer implements Optimizer {
     }
 
     if ("add".equals(previousOp) || "remove".equals(previousOp) || "move".equals(previousOp)) {
-      optimizedPatches.add(path, patch.subMap("op", "from"));
+      optimizedPatches.add(path, patch.subMap("op", "from", "index"));
       return;
     }
 

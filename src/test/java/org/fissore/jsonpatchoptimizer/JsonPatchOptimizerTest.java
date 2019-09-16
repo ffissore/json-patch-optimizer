@@ -6,8 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.util.Comparator;
-import java.util.stream.StreamSupport;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -30,17 +28,8 @@ public class JsonPatchOptimizerTest {
   private void assertPatchOptimized(String input, String expectedOutput, boolean addTests) throws Exception {
     ArrayNode patch = readJson(input);
 
-    ArrayNode optimizedUnsorted = jsonPatchOptimizer.optimize(patch, addTests);
-    ArrayNode optimized = optimizedUnsorted.arrayNode();
-    StreamSupport.stream(optimizedUnsorted.spliterator(), false)
-      .sorted(Comparator.comparing(node -> node.get("path").asText()))
-      .forEach(optimized::add);
-
-    ArrayNode expectedOptimizedUnsorted = readJson(expectedOutput);
-    ArrayNode expectedOptimized = expectedOptimizedUnsorted.arrayNode();
-    StreamSupport.stream(expectedOptimizedUnsorted.spliterator(), false)
-      .sorted(Comparator.comparing(node -> node.get("path").asText()))
-      .forEach(expectedOptimized::add);
+    ArrayNode optimized = jsonPatchOptimizer.optimize(patch, addTests);
+    ArrayNode expectedOptimized = readJson(expectedOutput);
 
     assertThat(optimized, equalTo(expectedOptimized));
   }

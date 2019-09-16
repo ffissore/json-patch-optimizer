@@ -8,7 +8,7 @@ class RemoveOptimizer implements Optimizer {
     String path = patch.s("path");
 
     if (optimizedPatches.notValued(path)) {
-      optimizedPatches.add(path, patch.subMap("op"));
+      optimizedPatches.add(path, patch.subMap("op", "index"));
       return;
     }
 
@@ -25,14 +25,14 @@ class RemoveOptimizer implements Optimizer {
     }
 
     if ("replace".equals(previousOp)) {
-      optimizedPatches.add(path, patch.subMap("op"));
+      optimizedPatches.add(path, patch.subMap("op").add("index", previous.i("index")));
       return;
     }
 
     if ("move".equals(previousOp)) {
       optimizedPatches
         .del(path)
-        .add(previous.s("from"), new SMap("op", "remove"));
+        .add(previous.s("from"), new SMap("op", "remove", "index", previous.i("index")));
       return;
     }
 

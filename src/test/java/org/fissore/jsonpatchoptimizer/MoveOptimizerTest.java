@@ -20,12 +20,13 @@ public class MoveOptimizerTest {
 
   @Test
   public void shouldCollapseSequenceOfMovesIfStartingWithAnAddOrCopy() {
-    optimizedPatches.add("/bar", new SMap("op", "add", "value", "something"));
+    optimizedPatches.add("/bar", new SMap("op", "add", "value", "something", "index", 1));
 
-    moveOptimizer.optimize(optimizedPatches, new SMap("op", "move", "path", "/foo", "from", "/bar"));
+    moveOptimizer.optimize(optimizedPatches, new SMap("op", "move", "path", "/foo", "from", "/bar").add("index", 2));
 
     assertFalse(optimizedPatches.valued("/bar"));
     assertEquals("add", optimizedPatches.map("/foo").s("op"));
     assertEquals("something", optimizedPatches.map("/foo").s("value"));
+    assertEquals(1, optimizedPatches.map("/foo").i("index"));
   }
 }

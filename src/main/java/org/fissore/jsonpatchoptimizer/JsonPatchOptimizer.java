@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.fissore.steroids.SMap;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.StreamSupport;
 
 /**
@@ -195,48 +195,56 @@ public class JsonPatchOptimizer {
   public ArrayNode optimize(ArrayNode patches, boolean addTests) {
     SMap optimizedPatches = new SMap();
 
+    AtomicInteger index = new AtomicInteger(-1);
     StreamSupport.stream(patches.spliterator(), false)
       .filter(patch -> !"test".equals(patch.get("op").asText()))
       .map(patch -> {
         SMap newPatch = new SMap()
           .add("path", patch.get("path").asText())
           .add("op", patch.get("op").asText())
-          .add("value", patch.get("value"));
+          .add("value", patch.get("value"))
+          .add("index", index.incrementAndGet());
         if (patch.has("from")) {
           newPatch.add("from", patch.get("from").asText());
         }
 
         return newPatch;
       })
-      .forEach(patch -> {
-        optimizers.get(patch.s("op")).optimize(optimizedPatches, patch);
-      });
+      .forEach(patch -> optimizers.get(patch.s("op")).optimize(optimizedPatches, patch));
 
-    ArrayNode resultingOptimizedPatches = patches.arrayNode();
+    List<SMap> unsortedOptimizedPatches = new ArrayList<>();
     optimizedPatches.forEach((key, v) -> {
       SMap patch = (SMap) v;
-
-      boolean addTestOp = false;
-      ObjectNode optimizedPatch = resultingOptimizedPatches.objectNode();
-      resultingOptimizedPatches.add(optimizedPatch);
-      optimizedPatch.put("path", key);
-      optimizedPatch.put("op", patch.s("op"));
-      if (patch.valued("value")) {
-        optimizedPatch.set("value", patch.o("value"));
-        addTestOp = addTests;
-      }
-      if (patch.valued("from")) {
-        optimizedPatch.put("from", patch.s("from"));
-      }
-
-      if (addTestOp) {
-        ObjectNode testOp = resultingOptimizedPatches.objectNode();
-        resultingOptimizedPatches.add(testOp);
-        testOp.put("path", key);
-        testOp.put("op", "test");
-        testOp.set("value", patch.o("value"));
-      }
+      patch.add("path", key);
+      unsortedOptimizedPatches.add(patch);
     });
+
+    ArrayNode resultingOptimizedPatches = patches.arrayNode();
+    unsortedOptimizedPatches.stream()
+      .sorted(Comparator.comparingInt(o -> o.i("index")))
+      .forEach(patch -> {
+        boolean addTestOp = false;
+
+        ObjectNode optimizedPatch = resultingOptimizedPatches.objectNode();
+        resultingOptimizedPatches.add(optimizedPatch);
+        optimizedPatch.put("path", patch.s("path"));
+        optimizedPatch.put("op", patch.s("op"));
+        if (patch.valued("value")) {
+          optimizedPatch.set("value", patch.o("value"));
+          addTestOp = addTests;
+        }
+        if (patch.valued("from")) {
+          optimizedPatch.put("from", patch.s("from"));
+        }
+
+        if (addTestOp) {
+          ObjectNode testOp = resultingOptimizedPatches.objectNode();
+          resultingOptimizedPatches.add(testOp);
+          testOp.put("path", patch.s("path"));
+          testOp.put("op", "test");
+          testOp.set("value", patch.o("value"));
+        }
+      });
 
     return resultingOptimizedPatches;
   }

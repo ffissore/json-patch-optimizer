@@ -20,51 +20,53 @@ public class RemoveOptimizerTest {
 
   @Test
   public void shouldMarkFieldRemoved() {
-    removeOptimizer.optimize(optimizedPatches, new SMap("op", "remove", "path", "/bar"));
+    removeOptimizer.optimize(optimizedPatches, new SMap("op", "remove", "path", "/bar").add("index", 1));
 
     assertEquals("remove", optimizedPatches.map("/bar").s("op"));
+    assertEquals(1, optimizedPatches.map("/bar").i("index"));
   }
 
   @Test
   public void shouldClearAddedOrCopiedField() {
-    optimizedPatches.add("/bar", new SMap("op", "add", "value", "something"));
+    optimizedPatches.add("/bar", new SMap("op", "add", "value", "something", "index", 1));
 
-    removeOptimizer.optimize(optimizedPatches, new SMap("path", "/bar"));
+    removeOptimizer.optimize(optimizedPatches, new SMap("op", "remove", "path", "/bar", "index", 2));
 
     assertTrue(optimizedPatches.isEmpty());
 
-    optimizedPatches.clear();
+    optimizedPatches.add("/bar", new SMap("op", "copy", "value", "something").add("index", 1));
 
-    optimizedPatches.add("/bar", new SMap("op", "copy", "value", "something"));
-
-    removeOptimizer.optimize(optimizedPatches, new SMap("path", "/bar"));
+    removeOptimizer.optimize(optimizedPatches, new SMap("op", "remove", "path", "/bar", "index", 2));
 
     assertTrue(optimizedPatches.isEmpty());
   }
 
   @Test
   public void shouldRemoveFieldMarkedAsMovedOrReplaced() {
-    optimizedPatches.add("/bar", new SMap("op", "move", "from", "/foo"));
+    optimizedPatches.add("/bar", new SMap("op", "move", "from", "/foo", "index", 1));
 
-    removeOptimizer.optimize(optimizedPatches, new SMap("path", "/bar"));
+    removeOptimizer.optimize(optimizedPatches, new SMap("op", "remove", "path", "/bar", "index", 2));
 
     assertEquals("remove", optimizedPatches.map("/foo").s("op"));
+    assertEquals(1, optimizedPatches.map("/foo").i("index"));
 
     optimizedPatches.clear();
 
-    optimizedPatches.add("/bar", new SMap("op", "replace", "value", "something"));
+    optimizedPatches.add("/bar", new SMap("op", "replace", "value", "something", "index", 1));
 
-    removeOptimizer.optimize(optimizedPatches, new SMap("op", "remove", "path", "/bar"));
+    removeOptimizer.optimize(optimizedPatches, new SMap("op", "remove", "path", "/bar", "index", 2));
 
     assertEquals("remove", optimizedPatches.map("/bar").s("op"));
+    assertEquals(1, optimizedPatches.map("/bar").i("index"));
   }
 
   @Test
   public void shouldIgnoreFieldAlreadyMarkedAsRemoved() {
-    optimizedPatches.add("/bar", new SMap("op", "remove"));
+    optimizedPatches.add("/bar", new SMap("op", "remove", "index", 1));
 
-    removeOptimizer.optimize(optimizedPatches, new SMap("op", "remove", "path", "/bar"));
+    removeOptimizer.optimize(optimizedPatches, new SMap("op", "remove", "path", "/bar", "index", 2));
 
     assertEquals("remove", optimizedPatches.map("/bar").s("op"));
+    assertEquals(1, optimizedPatches.map("/bar").i("index"));
   }
 }

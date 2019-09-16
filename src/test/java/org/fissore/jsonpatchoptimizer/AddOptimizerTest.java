@@ -19,55 +19,60 @@ public class AddOptimizerTest {
 
   @Test
   public void shouldMarkFieldAsAdded() {
-    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something"));
+    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something").add("index", 1));
 
     assertEquals("add", optimizedPatches.map("/bar").s("op"));
     assertEquals("something", optimizedPatches.map("/bar").s("value"));
+    assertEquals(1, optimizedPatches.map("/bar").i("index"));
   }
 
   @Test
   public void shouldAddAlreadyAddedFieldUsingNewValue() {
-    optimizedPatches.add("/bar", new SMap("op", "add", "value", "something"));
+    optimizedPatches.add("/bar", new SMap("op", "add", "value", "something", "index", 1));
 
-    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something new"));
+    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something new").add("index", 2));
 
     assertEquals("add", optimizedPatches.map("/bar").s("op"));
     assertEquals("something new", optimizedPatches.map("/bar").s("value"));
+    assertEquals(1, optimizedPatches.map("/bar").i("index"));
   }
 
   @Test
   public void shouldReplaceFieldMarkedAsRemoved() {
-    optimizedPatches.add("/bar", new SMap("op", "remove"));
+    optimizedPatches.add("/bar", new SMap("op", "remove", "index", 1));
 
-    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something"));
+    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something").add("index", 2));
 
     assertEquals("replace", optimizedPatches.map("/bar").s("op"));
     assertEquals("something", optimizedPatches.map("/bar").s("value"));
+    assertEquals(2, optimizedPatches.map("/bar").i("index"));
   }
 
   @Test
   public void shouldAddFieldMarkedAsCopyOrMove() {
-    optimizedPatches.add("/bar", new SMap("op", "copy", "from", "/foo"));
+    optimizedPatches.add("/bar", new SMap("op", "copy", "from", "/foo", "index", 1));
 
-    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something"));
+    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something").add("index", 2));
 
     assertEquals("add", optimizedPatches.map("/bar").s("op"));
     assertEquals("something", optimizedPatches.map("/bar").s("value"));
+    assertEquals(2, optimizedPatches.map("/bar").i("index"));
 
     optimizedPatches.clear();
 
-    optimizedPatches.add("/bar", new SMap("op", "move", "from", "/foo"));
+    optimizedPatches.add("/bar", new SMap("op", "move", "from", "/foo", "index", 1));
 
-    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something"));
+    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "value", "something").add("index", 2));
 
     assertEquals("add", optimizedPatches.map("/bar").s("op"));
     assertEquals("something", optimizedPatches.map("/bar").s("value"));
+    assertEquals(2, optimizedPatches.map("/bar").i("index"));
   }
 
   @Test(expected = IllegalStateException.class)
   public void shouldFailWhenAddingFieldMarkedAsReplaced() {
-    optimizedPatches.add("/bar", new SMap("op", "replace", "value", "something"));
+    optimizedPatches.add("/bar", new SMap("op", "replace", "value", "something", "index", 1));
 
-    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "something new", "something"));
+    addOptimizer.optimize(optimizedPatches, new SMap("op", "add", "path", "/bar", "something new", "something").add("index", 2));
   }
 }
