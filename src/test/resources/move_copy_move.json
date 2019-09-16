@@ -1,0 +1,17 @@
+[
+  {
+    "op": "move",
+    "path": "/b",
+    "from": "/a"
+  },
+  {
+    "op": "copy",
+    "path": "/c",
+    "from": "/b"
+  },
+  {
+    "op": "move",
+    "path": "/d",
+    "from": "/b"
+  }
+]

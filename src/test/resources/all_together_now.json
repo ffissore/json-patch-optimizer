@@ -1,0 +1,60 @@
+[
+  {
+    "op": "add",
+    "path": "/a",
+    "value": "bar"
+  },
+  {
+    "op": "add",
+    "path": "/z",
+    "value": "baz"
+  },
+  {
+    "op": "replace",
+    "path": "/a",
+    "from": "replace1"
+  },
+  {
+    "op": "move",
+    "path": "/b",
+    "from": "/a"
+  },
+  {
+    "op": "test",
+    "path": "/b",
+    "value": "bar_replaced"
+  },
+  {
+    "op": "remove",
+    "path": "/b"
+  },
+  {
+    "op": "remove",
+    "path": "/t"
+  },
+  {
+    "op": "add",
+    "path": "/c",
+    "value": "foo"
+  },
+  {
+    "op": "move",
+    "path": "/d",
+    "from": "/c"
+  },
+  {
+    "op": "copy",
+    "path": "/y",
+    "from": "/d"
+  },
+  {
+    "op": "move",
+    "path": "/m",
+    "from": "/y"
+  },
+  {
+    "op": "replace",
+    "path": "/m",
+    "value": "foo_replaced"
+  }
+]

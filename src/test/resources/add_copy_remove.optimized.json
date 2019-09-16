@@ -1,0 +1,17 @@
+[
+  {
+    "op": "add",
+    "path": "/z",
+    "value": "baz"
+  },
+  {
+    "op": "add",
+    "path": "/b",
+    "value": "bar"
+  },
+  {
+    "op": "add",
+    "path": "/c",
+    "value": "bar"
+  }
+]

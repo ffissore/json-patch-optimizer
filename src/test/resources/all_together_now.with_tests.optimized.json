@@ -1,0 +1,36 @@
+[
+  {
+    "op": "add",
+    "path": "/z",
+    "value": "baz"
+  },
+  {
+    "op": "test",
+    "path": "/z",
+    "value": "baz"
+  },
+  {
+    "op": "remove",
+    "path": "/t"
+  },
+  {
+    "op": "add",
+    "path": "/d",
+    "value": "foo"
+  },
+  {
+    "op": "test",
+    "path": "/d",
+    "value": "foo"
+  },
+  {
+    "op": "add",
+    "path": "/m",
+    "value": "foo_replaced"
+  },
+  {
+    "op": "test",
+    "path": "/m",
+    "value": "foo_replaced"
+  }
+]
