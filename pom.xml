@@ -14,7 +14,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     <jib-maven-plugin.version>1.6.0</jib-maven-plugin.version>
-    <jackson-databind.version>2.9.9.3</jackson-databind.version>
+    <jackson-databind.version>2.10.0</jackson-databind.version>
     <steroidmap.version>3.1.0</steroidmap.version>
     <junit.version>4.12</junit.version>
     <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
